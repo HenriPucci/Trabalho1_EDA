@@ -31,7 +31,7 @@ int main()
     int i=1;
 
 
-    if(arquivo = fopen("mediaVoo.csv", "r")) { // Abre o arquivo para leitura
+    if(arquivo = fopen("TestData.csv", "r")) { // Abre o arquivo para leitura
         fseek(arquivo, 0, SEEK_SET); // Posiciona o ponteiro no inicio do arquivo
 
         while(!feof(arquivo)) { // A funcao feof retorna 0 quando o ponteiro atinge o final do arquivo

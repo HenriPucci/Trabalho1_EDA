@@ -19,6 +19,7 @@ FILE *carregaArquivo(char *file_name, char *a){
     return 0;
 }
 
+
 //Função para comparar duas strings
 int comparaString(char *a, char *b)
 {
@@ -40,6 +41,16 @@ int comparaString(char *a, char *b)
     return resp;
 }
 
+//Função para substituir Strings;
+setString(char *a, char *b){
+    int i,j;
+
+    for (i=0; i<strlen(a); i++){
+        b[i] = a[i];
+    }
+    b[i] = '\0';
+}
+
 
 typedef struct
 {
@@ -47,8 +58,38 @@ typedef struct
     int qteVoos;
     int atraso;
     int qteAtraso;
+    float media;
 } Airline;
 
+void BubbleSort(int n,Airline *x){
+		int i,j;
+		for (i=n-1; i>=1;i--){
+			for(j=0;j<i;j++){
+				if(x[j].media>x[j+1].media){
+					/*TROCA*/
+					char temp[2];
+                    setString(x[j].name, temp);
+                    setString(x[j+1].name, x[j].name);
+                    setString(temp, x[j+1].name);
+					
+					float temp1;
+					temp1 = x[j].media;
+					x[j].media = x[j+1].media;
+					x[j+1].media = temp1;
+					
+					int temp2;
+					temp2 = x[j].qteVoos;
+					x[j].qteVoos = x[j+1].qteVoos;
+					x[j+1].qteVoos = temp2;
+
+                    int temp3;
+					temp3 = x[j].qteAtraso;
+					x[j].qteAtraso = x[j+1].qteAtraso;
+					x[j+1].qteAtraso = temp3;
+				}
+			}
+		}
+}
 
 
 int main()
@@ -57,16 +98,18 @@ int main()
     //voo = carregaArquivo("teste.csv", "r");
     mediaVoo = carregaArquivo("mediaVoo.csv", "r");
     qteVoo = carregaArquivo("qtdeVoo.csv", "w");
-    fputs ("Airline,AverageDelay\n", qteVoo);   //Coloca cabeçalho no arquivo gerado
-
-    Airline airline[10];    //Cria uma struct de 10 elementos (o arquivo teste possui 10 voos)
+    fputs ("Airline,AverageDelay,Delay,Flight\n", qteVoo);   //Coloca cabeçalho no arquivo gerado
+    
+    //QUANTIDADE DE LINHAS UTILIZADA:
+    int dados = 5000;
+    
+    Airline airline[dados];    //Cria uma struct de x elementos
     int cont = 0;
     int ler, i,j;
-    float media[10];
-    char charMedia[300];
+    char charMedia[dados*2], charVoo[dados*2], charAtraso[dados*2];
 
     //Para que a quantidade voos e atraso comece em 0;
-    for (i=0; i<10; i++){
+    for (i=0; i<dados; i++){
         airline[i].qteVoos = 0;
         airline[i].qteAtraso = 0;
     }
@@ -102,21 +145,29 @@ int main()
         }
     }
 
-    //Imprime os valores no arquivo csv
+    //Salva as médias
     for (i=0;i < cont; i++){
-        media[i] = (float)airline[i].qteAtraso/airline[i].qteVoos;
-        printf("%s voo %d vezes e atrasou %d vez(s).Media: %.3f\n", 
-        airline[i].name, airline[i].qteVoos, airline[i].qteAtraso,
-        media[i]);
+        airline[i].media = (float)airline[i].qteAtraso/airline[i].qteVoos;
+    }
+    //Ordena as médias
+    BubbleSort(5000, airline);
 
-        sprintf(charMedia, "%.3f", media[i]);
+    for (i=0;i < cont; i++){
+        sprintf(charMedia, "%.3f", airline[i].media);
+        sprintf(charVoo, "%d", airline[i].qteVoos);
+        sprintf(charAtraso, "%d", airline[i].qteAtraso);
 
         fputs(airline[i].name, qteVoo);
         fputs(",", qteVoo);
         fputs(charMedia, qteVoo);
+        fputs(",", qteVoo);
+        fputs(charAtraso, qteVoo);
+        fputs(",", qteVoo);
+        fputs(charVoo, qteVoo);
         fputs("\n", qteVoo);
+
+        printf("%s\n", airline[i].name);
     }
-    
 
     fclose(mediaVoo);
     fclose(qteVoo);

@@ -150,7 +150,7 @@ int main()
         airline[i].media = (float)airline[i].qteAtraso/airline[i].qteVoos;
     }
     //Ordena as médias
-    BubbleSort(5000, airline);
+    BubbleSort(dados, airline);
 
     for (i=0;i < cont; i++){
         sprintf(charMedia, "%.3f", airline[i].media);

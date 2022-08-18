@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-
 //Função para realizar ação com arquivo
 //Passa nome do arquivo e oq deseja fazer
 FILE *carregaArquivo(char *file_name, char *a){
@@ -60,6 +59,19 @@ setString(char *a, char *b){
     b[i] = '\0';
 }
 
+int contaLinhas(FILE *file_name){
+    int tam = 0, ler, x;
+    char y[3];
+    while(!feof(file_name)){
+        ler = fscanf(file_name, "%2[^,],%d\n", y, &x);
+
+        if(ler==2){
+            tam++;
+        }
+    }
+    fseek(file_name, 0, SEEK_SET);
+    return tam;
+}
 
 typedef struct
 {
@@ -107,14 +119,16 @@ void BubbleSort(int n,Airline *x){
 int main()
 {
     FILE *VoosDelay, *mediaVoo;
-    VoosDelay = carregaArquivo("VoosDelay.csv", "r");
+    VoosDelay = carregaArquivo("VoosDelay2.csv", "r");
     mediaVoo = carregaArquivo("mediaVoo.csv", "w");
     fputs ("Airline,AverageDelay,amountDelay,amountFlight\n", mediaVoo);   //Coloca cabeçalho no arquivo gerado
 
     //QUANTIDADE DE LINHAS UTILIZADA:
-    int dados = 539383;
+    int dados = contaLinhas(VoosDelay);
+    printf("Quantidade de dados: %d\n", dados);
     
     Airline* airline = malloc(dados*sizeof(Airline));    //Cria uma struct de 'dados' elementos
+
     int cont = 0;
     int ler, i,j;
     char charMedia[6], charVoo[7], charAtraso[7];
@@ -143,9 +157,6 @@ int main()
                     }
                 }
             }
-            if(cont==dados/2){
-                printf("Metade lido. Linha: %d\a\n\n", cont);
-            }
             
         }
         //Caso alguma linha esteja em formato diferente de "XX,1"
@@ -155,7 +166,7 @@ int main()
     
     } while (!feof(VoosDelay));
  
-    printf("Linhas: %d\n", cont);
+    printf("Dados lidos: %d\n", cont);
 
     //Associa o valor final de quantidade de voos e atrasos para cada empresa, independente de quando ela aparece
     for (i=cont;i >= 0; i--){
@@ -213,7 +224,7 @@ int main()
     }
 
     tempo = clock();
-    printf("Tempo de execucao: %f segundos", (float)tempo/CLOCKS_PER_SEC);
+    printf("\nTempo de execucao: %f segundos", (float)tempo/CLOCKS_PER_SEC);
     fclose(mediaVoo);
     fclose(VoosDelay);
     free(airline);

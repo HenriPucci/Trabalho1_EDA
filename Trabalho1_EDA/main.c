@@ -86,6 +86,7 @@ typedef struct
 //ordena as médias e os nomes e quantidade de voos em função da media;
 void BubbleSort(int n,Airline *x){
 
+        printf("Iniciando BubbleSort\n");
         clock_t start_t, end_t;
         double total_t;
 		int i,j;
@@ -121,7 +122,7 @@ void BubbleSort(int n,Airline *x){
         printf("Ordenado!\n");
         end_t = clock();
         total_t = (double)(end_t - start_t) / CLOCKS_PER_SEC;
-        printf("Tempo de execução do BubbleSort: %f segundos\n", total_t);
+        printf("Tempo de execucao do BubbleSort: %f segundos\n", total_t);
 }
 
 
@@ -175,8 +176,6 @@ int main()
     
     } while (!feof(VoosDelay));
 
-    printf("Dados lidos: %d\n", cont);
-
     //Associa o valor final de quantidade de voos e atrasos para cada empresa, independente de quando ela aparece
     for (i=cont;i >= 0; i--){
         for (j = 0; j < cont; j++){
@@ -191,6 +190,8 @@ int main()
     for (i=0;i < cont; i++){
         airline[i].media = (float)airline[i].qteAtraso/airline[i].qteVoos;
     }
+
+    printf("Dados lidos: %d\n", cont);
 
     //Ordena as médias
     BubbleSort(dados, airline);

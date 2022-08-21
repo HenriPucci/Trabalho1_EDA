@@ -23,7 +23,7 @@ int main()
     FILE *voo, *mediaVoo;
     
     voo = fopen("Airlines.csv", "r");
-    mediaVoo = fopen("VoosDelay2.csv", "w");
+    mediaVoo = fopen("VoosDelay.csv", "w");
     
     int i, dados, k = 0, cont = 0;;
     char valor1[100], *pt;
@@ -61,7 +61,7 @@ int main()
     }
 
     fclose(voo);
-    fclose(mediaVoo);
-    printf("\nVoosDelay gerado com %d linhas", dados);
+    fclose(mediaVoo);  
+    printf("\nVoosDelay gerado com %d linhas", cont);
     return 0;
 }

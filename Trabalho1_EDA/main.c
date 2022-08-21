@@ -86,32 +86,35 @@ typedef struct
 //ordena as médias e os nomes e quantidade de voos em função da media;
 void BubbleSort(int n,Airline *x){
 
-        printf("Iniciando BubbleSort\n");
         clock_t start_t, end_t;
         double total_t;
 		int i,j;
 
         start_t = clock();
+        printf("Iniciando BubbleSort\n");
 
 		for (i=n-1; i>=1;i--){
 			for(j=0;j<i;j++){
 				if(x[j].media>x[j+1].media){
-					/*TROCA*/
+					//Ordenas os nomes em função da média
 					char temp[2];
                     setString(x[j].name, temp);
                     setString(x[j+1].name, x[j].name);
                     setString(temp, x[j+1].name);
 					
+                    //Ordena as médias
 					float aux1;
 					aux1 = x[j].media;
 					x[j].media = x[j+1].media;
 					x[j+1].media = aux1;
 					
+                    //Ordena a quantidade de voos em função da média
 					int aux2;
 					aux2 = x[j].qteVoos;
 					x[j].qteVoos = x[j+1].qteVoos;
 					x[j+1].qteVoos = aux2;
 
+                    //Ordena a quantidade de atrasos em função da média
                     int aux3;
 					aux3 = x[j].qteAtraso;
 					x[j].qteAtraso = x[j+1].qteAtraso;
@@ -128,8 +131,13 @@ void BubbleSort(int n,Airline *x){
 
 int main()
 {
+    //Variáveis para calcular tempo de execução
+    clock_t start_t, end_t;
+    double tempo;
+
+    start_t = clock();
     FILE *VoosDelay, *mediaVoo;
-    VoosDelay = carregaArquivo("VoosDelay2.csv", "r");
+    VoosDelay = carregaArquivo("VoosDelay.csv", "r");
     mediaVoo = carregaArquivo("mediaVoo.csv", "w");
     fputs ("Airline,AverageDelay,amountDelay,amountFlight\n", mediaVoo);   //Coloca cabeçalho no arquivo gerado
 
@@ -142,8 +150,6 @@ int main()
     int cont = 0;
     int ler, i,j;
     char charMedia[6], charVoo[7], charAtraso[7];
-
-    clock_t tempo;
 
     //Para que a quantidade voos e atraso comece em 0;
     for (i=0; i<dados; i++){
@@ -232,12 +238,14 @@ int main()
         }
 
     }
-
-    tempo = clock();
-    printf("\nTempo de execucao total: %f segundos", (float)tempo/CLOCKS_PER_SEC);
+    
     fclose(mediaVoo);
     fclose(VoosDelay);
     free(airline);
+    end_t = clock();
+
+    tempo = (double)(end_t - start_t) / CLOCKS_PER_SEC;
+    printf("\nTempo de execucao total: %f segundos", tempo);
 
     return 0;
 }

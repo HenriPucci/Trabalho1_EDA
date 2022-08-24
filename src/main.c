@@ -83,7 +83,7 @@ typedef struct
 } Airline;
 
 //Função de ordenação BubbleSort
-//ordena as médias e os nomes e quantidade de voos em função da media;
+//ordena as médias e os nomes e quantidade de voos em função da média;
 void BubbleSort(int n,Airline *x){
 
         clock_t start_t, end_t;
@@ -146,6 +146,7 @@ int main()
     printf("Quantidade de dados: %d\n", dados);
     
     Airline* airline = malloc(dados*sizeof(Airline));    //Cria uma struct de 'dados' elementos
+    Airline* saida = malloc(dados*sizeof(Airline));
 
     int cont = 0;
     int ler, i,j;
@@ -164,84 +165,80 @@ int main()
         
         if (ler == 2){
             cont++;
-            for (i=0; i<cont; i++){
+            for (i=cont-1; i>=0; i--){
                 if (comparaString(airline[cont-1].name,airline[i].name)){
                     airline[cont-1].qteVoos++;  //Conta quantas vezes o nome da empresa se repetiu, logo quantos voos têm;
-
+                    
                     if(airline[i].atraso){
                         airline[cont-1].qteAtraso++;    //Se houve atraso (1), a quantide de atraso da determinada empresa é incremetada
                     }
+                    //Coloca o número total de voos e total de atrasos na primeira referência à companhia aérea i;
+                    airline[i].qteVoos = airline[cont-1].qteVoos;
+                    airline[i].qteAtraso = airline[cont-1].qteAtraso;
+                    
                 }
             }
             
         }
         //Caso alguma linha esteja em formato diferente de "XX,1"
         if (ler != 2 && !feof(VoosDelay) && cont!=0){
-            printf("Formato incorreto na linha %d\n", cont);
+            printf("Formato incorreto na linha: %d\nCorrija e tente novamente!", cont+2);
+            return 0;
         }
     
     } while (!feof(VoosDelay));
-
-    //Associa o valor final de quantidade de voos e atrasos para cada empresa, independente de quando ela aparece
-    for (i=cont;i >= 0; i--){
-        for (j = 0; j < cont; j++){
-            if(comparaString(airline[i].name,airline[j].name)){
-                airline[j].qteVoos = airline[i].qteVoos;
-                airline[j].qteAtraso = airline[i].qteAtraso;
-            }
-        }
-    }
-
-    //Salva as médias
-    for (i=0;i < cont; i++){
-        airline[i].media = (float)airline[i].qteAtraso/airline[i].qteVoos;
-    }
-
     printf("Dados lidos: %d\n", cont);
 
-    //Ordena as médias
-    BubbleSort(dados, airline);
-
-    //Elimina as repetições e salva no arquivo
+    //Elimna as repetições
     int k =0;
+
     for (i=0; i<cont; i++){
 
         for (j=0;j<k;j++){
-            if (comparaString(airline[i].name,airline[j].name)){
+            if (comparaString(airline[i].name,saida[j].name)){
                 break;
                 }
         }
 
         if (j==k){
-            setString(airline[i].name, airline[k].name);
-            airline[k].media = airline[i].media;
-            airline[k].qteVoos = airline[i].qteVoos;
-            airline[k].qteAtraso = airline[i].qteAtraso;
+            setString(airline[i].name, saida[k].name);
+            saida[k].qteVoos = airline[i].qteVoos;
+            saida[k].qteAtraso = airline[i].qteAtraso;
+            
+            //Calcula as médias
+            saida[k].media = (float)saida[k].qteAtraso/saida[k].qteVoos;
+            k++;
+        }
 
-            sprintf(charMedia, "%.3f", airline[k].media);
-            sprintf(charVoo, "%d", airline[k].qteVoos);
-            sprintf(charAtraso, "%d", airline[k].qteAtraso);
+        if(i==cont-1){
+            printf("Repeticoes eliminadas!\n");
+        }
 
-            fputs(airline[k].name, mediaVoo);
+    }
+
+    //Ordena as médias
+    BubbleSort(k, saida);
+    
+    //Salva os dados
+    for(i=0;i<k;i++){
+            sprintf(charMedia, "%.3f", saida[i].media);
+            sprintf(charVoo, "%d", saida[i].qteVoos);
+            sprintf(charAtraso, "%d", saida[i].qteAtraso);
+
+            fputs(saida[i].name, mediaVoo);
             fputs(",", mediaVoo);
             fputs(charMedia, mediaVoo);
             fputs(",", mediaVoo);
             fputs(charAtraso, mediaVoo);
             fputs(",", mediaVoo);
             fputs(charVoo, mediaVoo);
-            fputs("\n", mediaVoo);
-            k++;
-        }
-
-        if(i==cont-1){
-            printf("Salvo em mediaVoo!\n");
-        }
-
+            if(i!=(k-1)){fputs("\n", mediaVoo);}
     }
-    
+    printf("Salvo em mediaVoo!\n");
     fclose(mediaVoo);
     fclose(VoosDelay);
     free(airline);
+    free(saida);
     end_t = clock();
 
     tempo = (double)(end_t - start_t) / CLOCKS_PER_SEC;
